@@ -67,6 +67,7 @@ options:
     default: postgres
   conn_limit:
     version_added: '2.6'
+    default: "-1"
     description:
       - Specifies the database connection limit.
     required: false
@@ -145,12 +146,14 @@ def set_owner(cursor, db, owner):
     cursor.execute(query)
     return True
 
+
 def set_conn_limit(cursor, db, conn_limit):
-    query = "ALTER DATABASE %s CONNECTION_LIMIT %s" % (
+    query = "ALTER DATABASE %s CONNECTION LIMIT %s" % (
             pg_quote_identifier(db, 'database'),
             conn_limit)
     cursor.execute(query)
     return True
+
 
 def get_encoding_id(cursor, encoding):
     query = "SELECT pg_char_to_encoding(%(encoding)s) AS encoding_id;"
@@ -233,13 +236,10 @@ def db_create(cursor, db, owner, template, encoding, lc_collate, lc_ctype, conn_
             else:
                 conn_limit_change = False
 
-
             if owner_change or conn_limit_change:
                 return True
             else:
                 return False
-
-
 
 
 def db_matches(cursor, db, owner, template, encoding, lc_collate, lc_ctype, conn_limit):
