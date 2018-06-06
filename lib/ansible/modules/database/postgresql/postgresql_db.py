@@ -67,7 +67,6 @@ options:
     default: postgres
   conn_limit:
     version_added: '2.7'
-    default: "-1"
     description:
       - Specifies the database connection limit.
     required: false
@@ -226,20 +225,15 @@ def db_create(cursor, db, owner, template, encoding, lc_collate, lc_ctype, conn_
                 'Current LC_CTYPE: %s' % db_info['lc_ctype']
             )
         else:
+            changed = False
+
             if owner and owner != db_info['owner']:
-                owner_change = set_owner(cursor, db, owner)
-            else:
-                owner_change = False
+                changed = set_owner(cursor, db, owner)
 
             if conn_limit and conn_limit != str(db_info['conn_limit']):
-                conn_limit_change = set_conn_limit(cursor, db, conn_limit)
-            else:
-                conn_limit_change = False
+                changed = set_conn_limit(cursor, db, conn_limit)
 
-            if owner_change or conn_limit_change:
-                return True
-            else:
-                return False
+            return changed
 
 
 def db_matches(cursor, db, owner, template, encoding, lc_collate, lc_ctype, conn_limit):
@@ -399,7 +393,7 @@ def main():
         target=dict(default="", type="path"),
         target_opts=dict(default=""),
         maintenance_db=dict(default="postgres"),
-        conn_limit=dict(default="-1"),
+        conn_limit=dict(default=""),
     ))
 
     module = AnsibleModule(
