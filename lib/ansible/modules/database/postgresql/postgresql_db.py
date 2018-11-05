@@ -66,7 +66,7 @@ options:
       - The value specifies the initial database (which is also called as maintenance DB) that Ansible connects to.
     default: postgres
   conn_limit:
-    version_added: '2.7'
+    version_added: '2.8'
     description:
       - Specifies the database connection limit.
     required: false
